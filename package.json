@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/LucBonnet/ocean-backend-node-express/issues"
   },
-  "homepage": "https://github.com/LucBonnet/ocean-backend-node-express#readme"
+  "homepage": "https://github.com/LucBonnet/ocean-backend-node-express#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
