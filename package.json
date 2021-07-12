@@ -19,9 +19,11 @@
   },
   "homepage": "https://github.com/LucBonnet/ocean-backend-node-express#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mongodb": "^3.6.10"
   },
   "devDependencies": {
     "nodemon": "^2.0.9"
   }
 }
+  

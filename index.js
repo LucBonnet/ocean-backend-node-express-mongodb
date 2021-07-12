@@ -1,55 +1,79 @@
 const express = require("express");
-const app = express();
+const { MongoClient, ObjectId } = require("mongodb");
 
-// informa que o corpo de requisição será em JSON
-app.use(express.json());
+(async () => {
+  const url = "mongodb+srv://luc:1234@cluster0.4sofw.mongodb.net/test";
+  const dbName = "ocean";
 
-const lista = ["Bulbasaur", "Charmander", "Squirtle"];
+  console.info("Conectando ao banco de dados");
 
-// [POST]      -> create
-// [GET]       -> read
-// [PUT/PATCH] -> update
-// [DELETE]    -> delete
+  const client = await MongoClient.connect(url, { useUnifiedTopology: true });
 
-// [GET] -> Read All
-app.get("/pokemons", (req, res) => {
-  res.status(200).send(lista.filter(Boolean));
-});
+  console.info("MongoDB conectado com sucesso");
 
-// [GET] -> Read Single (by id)
-app.get("/pokemons/:id", (req, res) => {
-  const id = req.params.id;
+  const db = client.db(dbName);
 
-  const item = lista[id - 1];
+  const app = express();
+  // informa que o corpo de requisição será em JSON
+  app.use(express.json());
 
-  res.status(200).send(item);
-});
+  const lista = ["Bulbasaur", "Charmander", "Squirtle"];
 
-// [POST] - Create
-app.post("/pokemons", (req, res) => {
-  const item = req.body.nome;
+  const pokemons = db.collection("pokemons");
 
-  lista.push(item);
+  // [POST]      -> create
+  // [GET]       -> read
+  // [PUT/PATCH] -> update
+  // [DELETE]    -> delete
 
-  res.status(201).send("Criado com sucesso");
-});
+  // [GET] -> Read All
+  app.get("/pokemons", async (req, res) => {
+    const listaPokemons = await pokemons.find().toArray();
 
-// [PUT] - Update
-app.put("/pokemons/:id", (req, res) => {
-  const id = req.params.id;
-  const item = req.body.nome;
-  lista[id - 1] = item;
+    // res.status(200).send(lista.filter(Boolean));
+    res.status(200).send(listaPokemons);
+  });
 
-  res.send("Item alterado com sucesso");
-});
+  // [GET] -> Read Single (by id)
+  app.get("/pokemons/:id", async (req, res) => {
+    const id = req.params.id;
 
-// [DELETE] - Delete
-app.delete("/pokemons/:id", (req, res) => {
-  const id = req.params.id;
+    // const item = lista[id - 1];
+    const item = await pokemons.findOne({ _id: ObjectId(id) });
 
-  delete lista[id - 1];
+    res.status(200).send(item);
+  });
 
-  res.send("Item removido com sucesso");
-});
+  // [POST] - Create
+  app.post("/pokemons", async (req, res) => {
+    const item = req.body.nome;
 
-app.listen(3000);
+    // lista.push(item);
+    await pokemon.insertOne(item);
+
+    res.status(201).send("Criado com sucesso");
+  });
+
+  // [PUT] - Update
+  app.put("/pokemons/:id", async (req, res) => {
+    const id = req.params.id;
+    const item = req.body.nome;
+
+    // lista[id - 1] = item;
+    await pokemons.updateOne({ _id: ObjectId(id) }, { $set: item });
+
+    res.send("Item alterado com sucesso");
+  });
+
+  // [DELETE] - Delete
+  app.delete("/pokemons/:id", (req, res) => {
+    const id = req.params.id;
+
+    // delete lista[id - 1];
+    await pokemons.deleteOne({ _id: ObjectId(id) });
+
+    res.send("Item removido com sucesso");
+  });
+
+  app.listen(3000);
+})();
