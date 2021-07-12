@@ -1,8 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const { MongoClient, ObjectId } = require("mongodb");
 
 (async () => {
-  const url = "mongodb+srv://luc:1234@cluster0.4sofw.mongodb.net/test";
+  const url = process.env.DB_URL;
   const dbName = "ocean";
 
   console.info("Conectando ao banco de dados");
@@ -17,7 +18,7 @@ const { MongoClient, ObjectId } = require("mongodb");
   // informa que o corpo de requisição será em JSON
   app.use(express.json());
 
-  const lista = ["Bulbasaur", "Charmander", "Squirtle"];
+  // const lista = ["Bulbasaur", "Charmander", "Squirtle"];
 
   const pokemons = db.collection("pokemons");
 
@@ -66,7 +67,7 @@ const { MongoClient, ObjectId } = require("mongodb");
   });
 
   // [DELETE] - Delete
-  app.delete("/pokemons/:id", (req, res) => {
+  app.delete("/pokemons/:id", async (req, res) => {
     const id = req.params.id;
 
     // delete lista[id - 1];
