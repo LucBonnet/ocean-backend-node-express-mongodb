@@ -1,6 +1,6 @@
 require("dotenv").config();
 const express = require("express");
-const { MongoClient, ObjectId } = require("mongodb");
+const { MongoClient, ObjectId, Int32 } = require("mongodb");
 
 (async () => {
   const url = process.env.DB_URL;
@@ -51,10 +51,10 @@ const { MongoClient, ObjectId } = require("mongodb");
 
   // [GET] -> Read Single (by id)
   app.get("/pokemons/:id", async (req, res) => {
-    const id = req.params.id;
+    const itemId = req.params.id;
 
     // const item = lista[id - 1];
-    const item = await pokemons.findOne({ _id: ObjectId(id) });
+    const item = await pokemons.findOne({ id: Int32(itemId) });
 
     res.status(200).send(item);
   });
